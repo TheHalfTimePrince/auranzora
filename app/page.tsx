@@ -1,65 +1,94 @@
-import Image from "next/image";
+import { GridLogo } from '@/components/GridLogo';
+import { GridAbout } from '@/components/GridAbout';
+import { GridHeroText } from '@/components/GridHeroText';
+import { GridPortfolioItem } from '@/components/GridPortfolioItem';
+import { Footer } from '@/components/Footer';
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className="bg-black text-white min-h-screen">
+      {/* Grid Layout - 12 columns */}
+      <div className="grid grid-cols-12 gap-4 md:gap-6 p-4 md:p-6">
+        {/* Row 1: Logo (top-left) + Hero Text (right) */}
+        <div className="col-span-12 md:col-span-4 lg:col-span-3">
+          <GridLogo />
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <div className="col-span-12 md:col-span-8 lg:col-span-9">
+          <GridHeroText />
         </div>
-      </main>
-    </div>
+
+        {/* Row 2: About (left) + Services/Content (right) */}
+        <div className="col-span-12 md:col-span-4 lg:col-span-3 border-t border-white/10 pt-4 md:pt-6">
+          <GridAbout />
+        </div>
+        <div className="col-span-12 md:col-span-8 lg:col-span-9 border-t border-white/10 pt-4 md:pt-6">
+          <div className="p-6 md:p-8">
+            <h2 className="text-2xl md:text-3xl font-black text-white mb-4">What We Do</h2>
+            <p className="text-sm md:text-base text-white/60 mb-6">
+              Comprehensive digital solutions for modern businesses
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="p-4 border border-white/10 rounded-lg bg-white/5">
+                <h3 className="text-lg font-bold text-white mb-2">Web Design</h3>
+                <p className="text-sm text-white/60">Custom, responsive websites</p>
+              </div>
+              <div className="p-4 border border-white/10 rounded-lg bg-white/5">
+                <h3 className="text-lg font-bold text-white mb-2">Brand Identity</h3>
+                <p className="text-sm text-white/60">Complete brand packages</p>
+              </div>
+              <div className="p-4 border border-white/10 rounded-lg bg-white/5">
+                <h3 className="text-lg font-bold text-white mb-2">Digital Marketing</h3>
+                <p className="text-sm text-white/60">Strategic campaigns</p>
+              </div>
+              <div className="p-4 border border-white/10 rounded-lg bg-white/5">
+                <h3 className="text-lg font-bold text-white mb-2">E-commerce</h3>
+                <p className="text-sm text-white/60">Online stores optimized</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Row 3: Portfolio Items - 2 columns */}
+        <div className="col-span-12 md:col-span-6 border-t border-white/10 pt-4 md:pt-6">
+          <GridPortfolioItem
+            title="Project One"
+            category="Web Design"
+            description="A modern e-commerce platform with seamless user experience"
+            delay={100}
+          />
+        </div>
+        <div className="col-span-12 md:col-span-6 border-t border-white/10 pt-4 md:pt-6">
+          <GridPortfolioItem
+            title="Project Two"
+            category="Brand Identity"
+            description="Complete rebrand for a tech startup"
+            delay={200}
+          />
+        </div>
+
+        {/* Row 4: Portfolio Items - 2 columns */}
+        <div className="col-span-12 md:col-span-6 border-t border-white/10 pt-4 md:pt-6">
+          <GridPortfolioItem
+            title="Project Three"
+            category="Digital Marketing"
+            description="Multi-channel campaign that increased conversions by 300%"
+            delay={300}
+          />
+        </div>
+        <div className="col-span-12 md:col-span-6 border-t border-white/10 pt-4 md:pt-6">
+          <GridPortfolioItem
+            title="Project Four"
+            category="Web Design"
+            description="Portfolio website for a creative agency"
+            delay={400}
+          />
+        </div>
+
+        {/* Footer */}
+        <div className="col-span-12 border-t border-white/10 pt-6 md:pt-8">
+          <Footer />
+        </div>
+      </div>
+    </main>
   );
 }
