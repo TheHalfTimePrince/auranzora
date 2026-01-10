@@ -48,7 +48,8 @@ export default function LiquidEther({
   autoRampDuration = 0.6
 }: LiquidEtherProps) {
   const mountRef = useRef<HTMLDivElement>(null);
-  const webglRef = useRef<WebGLManager | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const webglRef = useRef<any>(null);
   const resizeObserverRef = useRef<ResizeObserver | null>(null);
   const rafRef = useRef<number | null>(null);
   const intersectionObserverRef = useRef<IntersectionObserver | null>(null);
@@ -570,7 +571,8 @@ export default function LiquidEther({
           this.scene.add(this.plane);
         }
       }
-      update() {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      update(..._args: unknown[]) {
         if (!Common.renderer || !this.scene || !this.camera) return;
         Common.renderer.setRenderTarget(this.props.output || null);
         Common.renderer.render(this.scene, this.camera);
