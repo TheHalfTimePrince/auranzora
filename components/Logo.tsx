@@ -89,11 +89,11 @@ const AuroraBackground = ({ colors, style }: { colors: readonly string[]; style:
 // Main Logo Component
 export const Logo = () => {
   return (
-    <div className="flex items-center select-none">
+    <div className="flex items-center select-none scale-75 h-32 w-96">
       {/* The Aura Rectangular Box (Simulated Gradient Component) */}
       <div 
         // Retained dimensions, but slightly increased text size will feel larger
-        className="relative w-72 h-28 md:w-96 md:h-36 overflow-hidden shadow-2xl shadow-inner transition duration-300 scale-[1.02] shrink-0 grain-overlay"
+        className="relative h-full w-full overflow-hidden shadow-2xl shadow-inner transition duration-300 scale-[1.25] shrink-0 grain-overlay"
       >
         
         {/* Use the self-contained Aurora Background component */}
