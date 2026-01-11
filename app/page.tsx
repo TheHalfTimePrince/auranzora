@@ -7,26 +7,17 @@ export default function Home() {
   return (
     <main className="bg-black text-white min-h-screen">
       {/* Fixed Liquid Ether Background */}
-  <div className="fixed inset-0 z-0 pointer-events-none">
-    <LiquidEther
-      colors={['#5227FF', '#FF9FFC', '#B19EEF']}
-      mouseForce={20}
-      cursorSize={100}
-      isViscous={false}
-      viscous={30}
-      iterationsViscous={32}
-      iterationsPoisson={32}
-      resolution={0.5}
-      isBounce={false}
-      autoDemo={true}
-      autoSpeed={0.5}
-      autoIntensity={2.2}
-      takeoverDuration={0.25}
-      autoResumeDelay={3000}
-      autoRampDuration={0.6}
-      className="pointer-events-auto"
-    />
-  </div>
+  
+
+      {/* Scrubbed Bento Gallery - MUST be outside z-index containers for iOS ScrollTrigger pinning */}
+
+      <ScrubbedBento />
+
+      {/* Horizontal Image Tiles Gallery - also outside for consistent pinning */}
+    
+      <HorizontalImageTiles />
+
+
       {/* Page Content - Above Background */}
       <div className="relative z-10">
         {/* Grid Layout - 12 columns */}
@@ -35,12 +26,6 @@ export default function Home() {
             <GridLogo />
           </div>
         </div> */}
-        
-        {/* Scrubbed Bento Gallery - Full width */}
-        <ScrubbedBento />
-
-        {/* Horizontal Image Tiles Gallery */}
-        <HorizontalImageTiles />
 
         {/* Content Section */}
         <div className="section">

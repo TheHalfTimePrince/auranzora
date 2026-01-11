@@ -83,7 +83,7 @@ export const LogoBlock = () => {
       />
       
       <div className="relative z-10 text-center">
-        <span className="text-black mix-blend-color-burn font-black text-4xl md:text-6xl lg:text-7xl tracking-[0.25em] leading-none block">
+        <span className="text-black mix-blend-color-burn font-black  md:text-5xl  tracking-[0.25em] leading-none block">
           AURANZORA
         </span>
       </div>

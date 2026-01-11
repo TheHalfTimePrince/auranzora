@@ -24,6 +24,8 @@ interface LiquidEtherProps {
   takeoverDuration?: number;
   autoResumeDelay?: number;
   autoRampDuration?: number;
+  /** Disable resize handling - useful when container is animated */
+  disableResize?: boolean;
 }
 
 export default function LiquidEther({
@@ -45,7 +47,8 @@ export default function LiquidEther({
   autoIntensity = 2.2,
   takeoverDuration = 0.25,
   autoResumeDelay = 1000,
-  autoRampDuration = 0.6
+  autoRampDuration = 0.6,
+  disableResize = false
 }: LiquidEtherProps) {
   const mountRef = useRef<HTMLDivElement>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -1233,16 +1236,19 @@ export default function LiquidEther({
     io.observe(container);
     intersectionObserverRef.current = io;
 
-    const ro = new ResizeObserver(() => {
-      if (!webglRef.current) return;
-      if (resizeRafRef.current) cancelAnimationFrame(resizeRafRef.current);
-      resizeRafRef.current = requestAnimationFrame(() => {
+    // Only set up ResizeObserver if resize is enabled
+    if (!disableResize) {
+      const ro = new ResizeObserver(() => {
         if (!webglRef.current) return;
-        webglRef.current.resize();
+        if (resizeRafRef.current) cancelAnimationFrame(resizeRafRef.current);
+        resizeRafRef.current = requestAnimationFrame(() => {
+          if (!webglRef.current) return;
+          webglRef.current.resize();
+        });
       });
-    });
-    ro.observe(container);
-    resizeObserverRef.current = ro;
+      ro.observe(container);
+      resizeObserverRef.current = ro;
+    }
 
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
@@ -1282,7 +1288,8 @@ export default function LiquidEther({
     autoIntensity,
     takeoverDuration,
     autoResumeDelay,
-    autoRampDuration
+    autoRampDuration,
+    disableResize
   ]);
 
   useEffect(() => {

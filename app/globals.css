@@ -88,19 +88,7 @@ p {
   white-space: nowrap;
 }
 
-.gallery__item::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    135deg,
-    rgba(0, 0, 0, 0.3) 0%,
-    rgba(0, 0, 0, 0.1) 50%,
-    rgba(0, 0, 0, 0.4) 100%
-  );
-  z-index: 5;
-  pointer-events: none;
-}
+/* Removed ::after overlay - content sections have their own backgrounds */
 
 .gallery--bento {
   display: grid;
@@ -153,59 +141,9 @@ p {
   padding: 2rem 5rem;
 }
 
-/* Gallery Center Text Overlay */
-.gallery-center-text {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  z-index: 20;
-  pointer-events: none;
-  gap: 0.5rem;
-}
-
-.gallery-center-text__top,
-.gallery-center-text__bottom {
-  font-size: clamp(1rem, 2.5vw, 2rem);
-  font-weight: 400;
-  color: rgba(255, 255, 255, 0.9);
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
-  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.8);
-}
-
-.gallery-center-text__word-container {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  perspective: 1000px;
-  min-height: clamp(3.5rem, 11vw, 11rem);
-  min-width: 50vw;
-}
-
-.gallery-center-text__word {
-  position: absolute;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  perspective: 1000px;
-}
-
+/* Flip character animation for bento center block */
 .flip-char {
   display: inline-block;
-  font-size: clamp(3rem, 10vw, 10rem);
-  font-weight: 800;
-  color: white;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-  text-shadow: 0 4px 40px rgba(0, 0, 0, 0.6);
-  line-height: 1;
   transform-style: preserve-3d;
   backface-visibility: hidden;
   will-change: transform, opacity;
