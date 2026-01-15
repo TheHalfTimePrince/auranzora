@@ -2,13 +2,28 @@ import { GridLogo } from '@/components/GridLogo';
 import { ScrubbedBento } from '@/components/ScrubbedBento';
 import { HorizontalImageTiles } from '@/components/HorizontalImageTiles';
 import LiquidEther from '@/components/LiquidEther';
+import { Hero } from '@/components/Hero';
+import { AboutSection } from '@/components/AboutSection';
 
 export default function Home() {
   return (
-    <main className="bg-black text-white min-h-screen">
+    <main className="bg-white relative z-10 text-white min-h-screen">
       {/* Fixed Liquid Ether Background */}
-  
-
+      {/* <Hero /> */}
+      <div className="fixed inset-0 z-0">
+        <LiquidEther 
+          colors={['#5227FF', '#FF9FFC', '#B19EEF']}
+          mouseForce={10}
+          cursorSize={100}
+          autoDemo={false}
+          autoSpeed={0.15}
+          autoIntensity={2.2}
+          resolution={0.2}
+        />
+      </div>
+      {/* About Section */}
+      <AboutSection />
+    
       {/* Scrubbed Bento Gallery - MUST be outside z-index containers for iOS ScrollTrigger pinning */}
 
       <ScrubbedBento />

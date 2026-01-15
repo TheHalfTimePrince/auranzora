@@ -49,6 +49,7 @@ p {
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  background: transparent;
 }
 
 .gallery {
@@ -210,7 +211,7 @@ p {
 
 .minimap-line {
   width: 2px;
-  background: white;
+  background: black;
   border-radius: 1px;
   will-change: height;
   /* No transition - GSAP controls height directly */
@@ -265,4 +266,17 @@ p {
   display: inline-block;
   will-change: transform;
   transform-origin: center center;
+}
+
+/* Animated gradient for logo hover */
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
