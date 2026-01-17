@@ -23,34 +23,29 @@ export const LogoIconAnimated = ({ className = '', trigger }: LogoIconAnimatedPr
   const svgRef = useRef<SVGSVGElement>(null);
   const morphRingRef = useRef<SVGPathElement>(null);
   const logoCompoundRef = useRef<SVGPathElement>(null);
+  const animationAddedRef = useRef(false);
 
   useEffect(() => {
     if (!svgRef.current || !morphRingRef.current || !logoCompoundRef.current) return;
 
+    // Ensure we start from the ring state
+    gsap.set(morphRingRef.current, { morphSVG: ringPath });
+
     // If trigger timeline is provided, add animation to it
     // For scroll-based animations, start immediately at time 0 (no delay)
-    if (trigger) {
+    if (trigger && !animationAddedRef.current) {
+      // Clear any existing animations first
+      gsap.killTweensOf(morphRingRef.current);
+      // Add animation to the trigger timeline at time 0
       trigger.to(morphRingRef.current, { 
         morphSVG: logoCompoundRef.current, 
         duration: logoIconAnimation.morph.duration,
         ease: 'power2.out', // Start fast, ease out smoothly
       }, 0); // Start at time 0 for scroll-based scrubbing
-    } else {
-      // Fallback to original time-based animation
-      const tl = gsap
-        .timeline({
-          delay: logoIconAnimation.timeline.delay,
-          defaults: { ease: logoIconAnimation.timeline.defaultEase },
-        })
-        .to(morphRingRef.current, { 
-          morphSVG: logoCompoundRef.current, 
-          duration: logoIconAnimation.morph.duration,
-          ease: logoIconAnimation.morph.ease,
-        });
-
-      return () => {
-        tl.kill();
-      };
+      animationAddedRef.current = true;
+    } else if (!trigger) {
+      // Reset flag when trigger is removed
+      animationAddedRef.current = false;
     }
   }, [trigger]);
 

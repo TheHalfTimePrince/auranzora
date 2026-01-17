@@ -5,12 +5,14 @@ import { useRef, useEffect, useState } from 'react';
 import gsap from 'gsap';
 import { ScrambleTextPlugin } from 'gsap/ScrambleTextPlugin';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { ScrollSmoother } from 'gsap/ScrollSmoother';
+import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 import { aboutSectionAnimation, logoIconAnimation } from '@/lib/config/aboutsectionanimation';
 import { LogoIconAnimated } from './LogoIconAnimated';
 import { LogoTextAnimated } from './LogoTextAnimated';
 import { useIsMobile } from '@/hooks/useMediaQuery';
 
-gsap.registerPlugin(ScrambleTextPlugin, ScrollTrigger);
+gsap.registerPlugin(ScrambleTextPlugin, ScrollTrigger, ScrollSmoother, ScrollToPlugin);
 
 const GradientWeightText = ({ word, className }: { word: string; className: string }) => {
   const letters = word.split('');
@@ -94,6 +96,7 @@ export const AboutSection = () => {
   const sectionRef = useRef<HTMLElement>(null);
   const [masterTimeline, setMasterTimeline] = useState<gsap.core.Timeline | null>(null);
   const [digitalText, setDigitalText] = useState('al');
+  const hasAutoScrolledRef = useRef(false);
 
   useEffect(() => {
     if (!fixedLogoRef.current || !textLogoRef.current || !paragraphRef.current || !sectionRef.current) return;
@@ -216,6 +219,52 @@ export const AboutSection = () => {
     ScrollTrigger.addEventListener('refreshInit', refreshScrollDistance);
 
     setMasterTimeline(masterTL);
+
+    // Auto-scroll to end on initial load (after ScrollTrigger is ready)
+    // Only scroll if we're at the top of the page (initial load)
+    const shouldAutoScroll = typeof window !== 'undefined' && window.scrollY === 0 && !hasAutoScrolledRef.current;
+    
+    if (shouldAutoScroll) {
+      // Wait for ScrollTrigger to calculate positions, then scroll
+      requestAnimationFrame(() => {
+        ScrollTrigger.refresh();
+        requestAnimationFrame(() => {
+          if (!hasAutoScrolledRef.current && scrollTrigger) {
+            hasAutoScrolledRef.current = true;
+            const smoother = ScrollSmoother.get();
+            if (smoother) {
+              // Scroll to the end position of the ScrollTrigger over 2 seconds
+              const endPosition = scrollTrigger.end;
+              // Animate scroll position using GSAP over 2 seconds
+              gsap.to(window, {
+                scrollTo: {
+                  y: endPosition,
+                  autoKill: false,
+                },
+                duration: 2,
+                ease: 'power2.inOut',
+              });
+            } else {
+              // Fallback if ScrollSmoother isn't ready yet
+              setTimeout(() => {
+                const smoother = ScrollSmoother.get();
+                if (smoother && scrollTrigger) {
+                  const endPosition = scrollTrigger.end;
+                  gsap.to(window, {
+                    scrollTo: {
+                      y: endPosition,
+                      autoKill: false,
+                    },
+                    duration: 2,
+                    ease: 'power2.inOut',
+                  });
+                }
+              }, 100);
+            }
+          }
+        });
+      });
+    }
 
     return () => {
       ScrollTrigger.removeEventListener('refreshInit', refreshScrollDistance);
