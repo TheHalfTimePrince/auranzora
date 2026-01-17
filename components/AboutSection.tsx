@@ -301,7 +301,7 @@ export const AboutSection = () => {
   }, []);
 
   return (
-    <section ref={sectionRef} className="h-screen text-black py-8 md:py-32 px-4 md:px-8 relative overflow-hidden">
+    <section ref={sectionRef} className="h-dvh text-black py-8 md:py-32 px-4 md:px-8 relative overflow-hidden">
     
         {/* Fixed centered logo */}
         <div 
