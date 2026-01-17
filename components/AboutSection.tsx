@@ -122,6 +122,7 @@ export const AboutSection = () => {
     const section = sectionRef.current;
 
     // Initialize GSAP transforms - center the logo using xPercent and yPercent
+    // Start with opacity 1 so it's visible when scrolled to top
     gsap.set(fixedLogo, {
       xPercent: aboutSectionAnimation.fixedLogo.xPercent,
       yPercent: aboutSectionAnimation.fixedLogo.yPercent,
@@ -196,7 +197,7 @@ export const AboutSection = () => {
       // Add logo overlay animation to timeline
       // Scale first with bounce, then move with bounce - sequential for better effect
       
-      // First: Scale animation with bounce (faster and more dynamic)
+      // Scale animation with bounce (fixed logo is already visible)
       masterTL.to(fixedLogo, {
         scale: aboutSectionAnimation.logoOverlay.targetScale,
         duration: scaleDuration,
@@ -312,11 +313,12 @@ export const AboutSection = () => {
           <p 
             ref={paragraphRef}
             className={` font-normal leading-tight tracking-tight ${fontSize}`} 
-            style={{ fontFamily: 'var(--font-xanh-mono)' }}
+            style={{ fontFamily: 'var(--font-xanh-mono)', opacity: 0 }} // Start invisible to prevent flash
           >
             <span 
               ref={textLogoRef}
               className={`inline-flex items-center gap-1 md:gap-2 align-middle ${isMobile ? '-mt-2' : '-mt-8'}`}
+              style={{ opacity: 0 }} // Start invisible to prevent flash
             >
               <LogoIconAnimated startFinished={true} className={isMobile ? "h-5 w-5 inline-block" : "h-10 w-10 md:h-14 md:w-14 inline-block"} />
               <LogoTextAnimated className={isMobile ? "h-5 text-black inline-block" : "h-10 md:h-14 text-black inline-block"} />
