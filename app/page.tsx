@@ -1,3 +1,4 @@
+'use client';
 import { GridLogo } from '@/components/GridLogo';
 import { ScrubbedBento } from '@/components/ScrubbedBento';
 import { HorizontalImageTiles } from '@/components/HorizontalImageTiles';
