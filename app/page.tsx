@@ -20,7 +20,7 @@ export default function Home() {
     
       {/* Scrubbed Bento Gallery - MUST be outside z-index containers for iOS ScrollTrigger pinning */}
 
-      <ScrubbedBento />
+      {/* <ScrubbedBento /> */}
 
       {/* Horizontal Image Tiles Gallery - also outside for consistent pinning */}
     
