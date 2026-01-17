@@ -1,7 +1,7 @@
 'use client';
 
 import { LogoTextMorphAnimated } from './LogoTextMorphAnimated';
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, useLayoutEffect } from 'react';
 import gsap from 'gsap';
 import { ScrambleTextPlugin } from 'gsap/ScrambleTextPlugin';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -10,7 +10,6 @@ import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 import { aboutSectionAnimation, logoIconAnimation } from '@/lib/config/aboutsectionanimation';
 import { LogoIconAnimated } from './LogoIconAnimated';
 import { LogoTextAnimated } from './LogoTextAnimated';
-import { useIsMobile } from '@/hooks/useMediaQuery';
 
 gsap.registerPlugin(ScrambleTextPlugin, ScrollTrigger, ScrollSmoother, ScrollToPlugin);
 
@@ -85,7 +84,23 @@ const GradientWeightText = ({ word, className }: { word: string; className: stri
 };
 
 export const AboutSection = () => {
-  const isMobile = useIsMobile();
+  // Use useLayoutEffect to prevent layout glitch - mobile-first approach
+  const [isMobile, setIsMobile] = useState(true);
+  
+  useLayoutEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    // Set immediately on mount (runs synchronously before paint)
+    checkMobile();
+    
+    // Listen for resize events
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const fontSize = isMobile ? 'text-2xl' : 'text-7xl';
   const fontSizeSmall = isMobile ? 'text-sm' : 'text-xl';
   const digitalRef = useRef<HTMLSpanElement>(null);
@@ -112,6 +127,7 @@ export const AboutSection = () => {
       yPercent: aboutSectionAnimation.fixedLogo.yPercent,
       scale: aboutSectionAnimation.fixedLogo.initialScale,
       transformOrigin: aboutSectionAnimation.fixedLogo.transformOrigin,
+      opacity: 1, // Start visible
     });
 
     // Set initial opacity to 0 for text logo and paragraph
@@ -202,6 +218,14 @@ export const AboutSection = () => {
         duration: textFadeDuration,
         ease: aboutSectionAnimation.textLogo.opacity.ease,
       }, textFadeStartTime);
+
+      // Hide the fixed centered logo once the text logo becomes visible
+      // Hide it when the text logo fade-in completes
+      masterTL.to(fixedLogo, {
+        opacity: 0,
+        duration: 0.1,
+        ease: 'power2.out',
+      }, textFadeEndTime);
     });
 
     // Create ScrollTrigger with pinning
@@ -294,7 +318,7 @@ export const AboutSection = () => {
               ref={textLogoRef}
               className={`inline-flex items-center gap-1 md:gap-2 align-middle ${isMobile ? '-mt-2' : '-mt-8'}`}
             >
-              <LogoIconAnimated className={isMobile ? "h-5 w-5 inline-block" : "h-10 w-10 md:h-14 md:w-14 inline-block"} />
+              <LogoIconAnimated startFinished={true} className={isMobile ? "h-5 w-5 inline-block" : "h-10 w-10 md:h-14 md:w-14 inline-block"} />
               <LogoTextAnimated className={isMobile ? "h-5 text-black inline-block" : "h-10 md:h-14 text-black inline-block"} />
             </span>
             <span className={`${fontSizeSmall}`}>{' '}is a {' '}</span>
