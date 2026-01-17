@@ -306,7 +306,7 @@ export const AboutSection = () => {
           ref={fixedLogoRef}
           className="absolute top-1/2 left-1/2  z-20 flex items-center gap-1 md:gap-2 pointer-events-none"
           style={{ 
-            transform: `translate(-50%, -50%) scale(${aboutSectionAnimation.fixedLogo.initialScale})`,
+            transform: ` scale(${aboutSectionAnimation.fixedLogo.initialScale})`,
             transformOrigin: aboutSectionAnimation.fixedLogo.transformOrigin,
           }}
         >
