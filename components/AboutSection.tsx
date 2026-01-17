@@ -122,14 +122,16 @@ export const AboutSection = () => {
     const section = sectionRef.current;
 
     // Initialize GSAP transforms - center the logo using xPercent and yPercent
-    // Start with opacity 1 so it's visible when scrolled to top
     gsap.set(fixedLogo, {
       xPercent: aboutSectionAnimation.fixedLogo.xPercent,
       yPercent: aboutSectionAnimation.fixedLogo.yPercent,
       scale: aboutSectionAnimation.fixedLogo.initialScale,
       transformOrigin: aboutSectionAnimation.fixedLogo.transformOrigin,
-      opacity: 1, // Start visible
     });
+
+    // Once GSAP has initialized, make it visible (not part of animation timeline)
+    // This prevents the initial flash while ensuring it's visible when scrolled to top
+    gsap.set(fixedLogo, { opacity: 1 });
 
     // Set initial opacity to 0 for text logo and paragraph
     gsap.set([textLogo, paragraph], {
@@ -306,8 +308,8 @@ export const AboutSection = () => {
           ref={fixedLogoRef}
           className="absolute top-1/2 left-1/2  z-20 flex items-center gap-1 md:gap-2 pointer-events-none"
           style={{ 
-            transform: ` scale(${aboutSectionAnimation.fixedLogo.initialScale})`,
-            transformOrigin: aboutSectionAnimation.fixedLogo.transformOrigin,
+            transform: `scale(${aboutSectionAnimation.fixedLogo.initialScale})`,
+            opacity: 0, // Start invisible, will be set to 1 once GSAP initializes
           }}
         >
           <LogoIconAnimated trigger={masterTimeline} className={isMobile ? "h-5 w-5 inline-block" : "h-10 w-10 md:h-14 md:w-14 inline-block"} />
