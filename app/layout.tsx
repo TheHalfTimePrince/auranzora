@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Xanh_Mono, Space_Mono } from "next/font/google";
 import "./globals.css";
 import { ScrollSmootherInit } from "@/components/ScrollSmootherInit";
+import LiquidEther from "@/components/LiquidEther";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,8 +39,20 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${xanhMono.variable} ${spaceMono.variable} antialiased`}
+        className={`bg-white ${geistSans.variable} ${geistMono.variable} ${xanhMono.variable} ${spaceMono.variable} antialiased`}
       >
+         
+         <div className="fixed invert  w-screen h-screen inset-0 z-0">
+        <LiquidEther 
+          colors={['#000000',  '#006AF9', '#0000FF',]}
+          mouseForce={10}
+          cursorSize={100}
+          autoDemo={false}
+          autoSpeed={0.15}
+          autoIntensity={2.2}
+          resolution={0.4}
+        />
+      </div>
         <div id="smooth-wrapper">
           <div id="smooth-content">
             {children}

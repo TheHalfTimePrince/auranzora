@@ -1,7 +1,16 @@
 'use client';
 
-import { LogoTextAnimated } from './LogoTextAnimated';
+import { LogoTextMorphAnimated } from './LogoTextMorphAnimated';
+import { useRef, useEffect, useState } from 'react';
+import gsap from 'gsap';
+import { ScrambleTextPlugin } from 'gsap/ScrambleTextPlugin';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { aboutSectionAnimation, logoIconAnimation } from '@/lib/config/aboutsectionanimation';
 import { LogoIconAnimated } from './LogoIconAnimated';
+import { LogoTextAnimated } from './LogoTextAnimated';
+import { useIsMobile } from '@/hooks/useMediaQuery';
+
+gsap.registerPlugin(ScrambleTextPlugin, ScrollTrigger);
 
 const GradientWeightText = ({ word, className }: { word: string; className: string }) => {
   const letters = word.split('');
@@ -72,33 +81,182 @@ const GradientWeightText = ({ word, className }: { word: string; className: stri
 };
 
 export const AboutSection = () => {
-  const fontSize = 'text-7xl';
-  const fontSizeSmall = 'text-xl';
+  const isMobile = useIsMobile();
+  const fontSize = isMobile ? 'text-2xl' : 'text-7xl';
+  const fontSizeSmall = isMobile ? 'text-sm' : 'text-xl';
+  const digitalRef = useRef<HTMLSpanElement>(null);
+  const digitalAlRef = useRef<HTMLSpanElement>(null);
+  const fixedLogoRef = useRef<HTMLDivElement>(null);
+  const textLogoRef = useRef<HTMLSpanElement>(null);
+  const paragraphRef = useRef<HTMLParagraphElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
+  const [masterTimeline, setMasterTimeline] = useState<gsap.core.Timeline | null>(null);
+  const [digitalText, setDigitalText] = useState('al');
+
+  useEffect(() => {
+    if (!fixedLogoRef.current || !textLogoRef.current || !paragraphRef.current || !sectionRef.current) return;
+
+    const fixedLogo = fixedLogoRef.current;
+    const textLogo = textLogoRef.current;
+    const paragraph = paragraphRef.current;
+    const section = sectionRef.current;
+
+    // Initialize GSAP transforms - center the logo using xPercent and yPercent
+    gsap.set(fixedLogo, {
+      xPercent: aboutSectionAnimation.fixedLogo.xPercent,
+      yPercent: aboutSectionAnimation.fixedLogo.yPercent,
+      scale: aboutSectionAnimation.fixedLogo.initialScale,
+      transformOrigin: aboutSectionAnimation.fixedLogo.transformOrigin,
+    });
+
+    // Set initial opacity to 0 for text logo and paragraph
+    gsap.set([textLogo, paragraph], {
+      opacity: aboutSectionAnimation.textLogo.opacity.initial,
+    });
+
+    // Function to calculate the position needed
+    const calculateTransform = () => {
+      // Get bounding rects - these give us viewport-relative positions
+      const textRect = textLogo.getBoundingClientRect();
+      const fixedRect = fixedLogo.getBoundingClientRect();
+      
+      // Get center positions
+      const textCenterX = textRect.left + textRect.width / 2;
+      const textCenterY = textRect.top + textRect.height / 2;
+      const fixedCenterX = fixedRect.left + fixedRect.width / 2;
+      const fixedCenterY = fixedRect.top + fixedRect.height / 2;
+      
+      // Calculate delta from fixed logo's current center to text logo's center
+      // GSAP's x/y transforms are relative to the element's current position
+      const deltaX = textCenterX - fixedCenterX;
+      const deltaY = textCenterY - fixedCenterY;
+      
+      return { deltaX, deltaY };
+    };
+
+    // Create master timeline that will be scrubbed by ScrollTrigger
+    const masterTL = gsap.timeline({ paused: aboutSectionAnimation.timeline.paused });
+    
+    // Calculate total timeline duration based on all animation timings
+    // Logo icon: starts at 0, duration 1 = ends at 1.0
+    // Logo overlay: scale (0.4s) + move (0.5s) starting at 1.0 = ends at ~1.9
+    // Text fade: starts at ~1.9, duration 0.8 = ends at ~2.7
+    // Adjusted to start immediately for scroll-based scrubbing while maintaining relative timing
+    const totalDuration = aboutSectionAnimation.timeline.totalDuration;
+    
+    // Calculate scroll distance based on timeline duration
+    // Use viewport height as base unit for smooth scrubbing (similar to horizontal scroller using width)
+    let scrollDistance: number;
+    
+    function refreshScrollDistance() {
+      scrollDistance = typeof window !== 'undefined' 
+        ? window.innerHeight * totalDuration * aboutSectionAnimation.scrollTrigger.scrollDistanceMultiplier
+        : totalDuration * aboutSectionAnimation.scrollTrigger.fallbackScrollDistance;
+    }
+    
+    refreshScrollDistance();
+
+    // Wait for layout to stabilize, then add animations to timeline
+    requestAnimationFrame(() => {
+      const { deltaX, deltaY } = calculateTransform();
+      
+      // Add logo overlay animation to timeline
+      // Scale first with bounce, then move with bounce - sequential for better effect
+      const logoIconDuration = logoIconAnimation.morph.duration;
+      const overlayStartTime = logoIconDuration; // Start right after logo icon completes
+      
+      // First: Scale animation with bounce (faster and more dynamic)
+      const scaleDuration = aboutSectionAnimation.logoOverlay.scale.duration;
+      masterTL.to(fixedLogo, {
+        scale: aboutSectionAnimation.logoOverlay.targetScale,
+        duration: scaleDuration,
+        ease: aboutSectionAnimation.logoOverlay.scale.ease,
+      }, overlayStartTime);
+      
+      // Then: Position animation (smooth, no bounce)
+      const moveDuration = aboutSectionAnimation.logoOverlay.move.duration;
+      masterTL.to(fixedLogo, {
+        x: deltaX,
+        y: deltaY,
+        duration: moveDuration,
+        ease: aboutSectionAnimation.logoOverlay.move.ease,
+      }, overlayStartTime + scaleDuration * aboutSectionAnimation.logoOverlay.move.startOffset);
+
+      // Add text logo and paragraph fade-in to timeline
+      // Start after scale and move animations complete
+      const textFadeStartTime = overlayStartTime + scaleDuration + moveDuration;
+      
+      masterTL.to([textLogo, paragraph], {
+        opacity: 1,
+        duration: aboutSectionAnimation.textLogo.opacity.duration,
+        ease: aboutSectionAnimation.textLogo.opacity.ease,
+      }, textFadeStartTime);
+    });
+
+    // Create ScrollTrigger with pinning
+    const scrollTrigger = ScrollTrigger.create({
+      trigger: section,
+      pin: section,
+      start: aboutSectionAnimation.scrollTrigger.start,
+      end: () => `+=${scrollDistance}`,
+      scrub: aboutSectionAnimation.scrollTrigger.scrub,
+      animation: masterTL,
+      invalidateOnRefresh: aboutSectionAnimation.scrollTrigger.invalidateOnRefresh,
+    });
+    
+    // Refresh scroll distance on window resize (similar to horizontal scroller)
+    ScrollTrigger.addEventListener('refreshInit', refreshScrollDistance);
+
+    setMasterTimeline(masterTL);
+
+    return () => {
+      ScrollTrigger.removeEventListener('refreshInit', refreshScrollDistance);
+      scrollTrigger.kill();
+      masterTL.kill();
+    };
+  }, []);
+
   return (
-    <section className=" text-black py-32 md:py-48 px-4 md:px-8 relative overflow-hidden">
-       <div className="absolute top-0 left-0 w-full h-full ">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-purple-500/10 via-blue-500/10 to-pink-500/10 rounded-full blur-3xl" />
-      </div>
-      <div className="container mx-auto max-w-5xl relative z-10 ">
-        <p className={` font-normal leading-tight tracking-tight ${fontSize}`} style={{ fontFamily: 'var(--font-xanh-mono)' }}>
-          <span className="inline-flex items-center gap-2 align-middle -mt-8 ">
-            <LogoIconAnimated className="h-10 w-10 md:h-14 md:w-14 inline-block" />
-            <LogoTextAnimated className="h-10 md:h-14 text-black inline-block" />
-          </span>
-          <span className={`${fontSizeSmall}`}>{' '}is a {' '}</span>
-          <span className={`${fontSize}`}>{' '}digital agency building{' '}</span>
-          <span className={`${fontSize} text-purple-600`}>search-optimized websites</span>
-          <span className={`${fontSizeSmall}`}>{' '}and{' '}</span>
-          <span className={`${fontSize} text-blue-600`}>brand identities</span>
-          <span className={`${fontSizeSmall}`}>{' '}for{' '}</span>
-          <span className={`${fontSize} font-extrabold text-shadow-lg text-white text-shadow-pink-600`}>{' '}modern{' '}</span>
-          <span className={`${fontSize}`}> businesses. From technical web development to complete visual systems, if you need a functional online presence that is built for{' '}</span>
-          <span className={`${fontSize} text-pink-600`}>search visibility</span>
-          <span className={`${fontSize}`}>{' '}and professional recognition in 2026, we can design it.</span>
-        </p>
-      </div>
+    <section ref={sectionRef} className="h-screen text-black py-8 md:py-32 px-4 md:px-8 relative overflow-hidden">
+    
+        {/* Fixed centered logo */}
+        <div 
+          ref={fixedLogoRef}
+          className="absolute top-1/2 left-1/2  z-20 flex items-center gap-1 md:gap-2 pointer-events-none"
+        >
+          <LogoIconAnimated trigger={masterTimeline} className={isMobile ? "h-5 w-5 inline-block" : "h-10 w-10 md:h-14 md:w-14 inline-block"} />
+          <LogoTextAnimated className={isMobile ? "h-5 text-black inline-block" : "h-10 md:h-14 text-black inline-block"} />
+        </div>
+        <div className="container mx-auto max-w-5xl relative z-10 h-full flex items-center">
+          <p 
+            ref={paragraphRef}
+            className={` font-normal leading-tight tracking-tight ${fontSize}`} 
+            style={{ fontFamily: 'var(--font-xanh-mono)' }}
+          >
+            <span 
+              ref={textLogoRef}
+              className={`inline-flex items-center gap-1 md:gap-2 align-middle ${isMobile ? '-mt-2' : '-mt-8'}`}
+            >
+              <LogoIconAnimated className={isMobile ? "h-5 w-5 inline-block" : "h-10 w-10 md:h-14 md:w-14 inline-block"} />
+              <LogoTextAnimated className={isMobile ? "h-5 text-black inline-block" : "h-10 md:h-14 text-black inline-block"} />
+            </span>
+            <span className={`${fontSizeSmall}`}>{' '}is a {' '}</span>
+            <span 
+              ref={digitalRef}
+              className={`${fontSize}  inline-block`}
+            >digital
+            </span>
+            <span className={`${fontSize}`}>{' '}agency building{' '}</span>
+            <span className={`${fontSize} text-purple-600`}>search-optimized websites</span>
+            <span className={`${fontSizeSmall}`}>{' '}and{' '}</span>
+            <span className={`${fontSize} text-blue-600`}>brand identities</span>
+            <span className={`${fontSizeSmall}`}>{' '}for{' '}</span>
+            <span className={`${fontSize} font-extrabold text-shadow-lg text-white text-shadow-pink-600`}>{' '}modern{' '}</span>
+            <span className={`${fontSize}`}> businesses. From technical web development to complete visual systems, if you need a functional online presence that is built for{' '}</span>
+            <span className={`${fontSize} text-pink-600`}>search visibility</span>
+            <span className={`${fontSize}`}>{' '}and professional recognition in 2026, we can design it.</span>
+          </p>
+        </div>
     </section>
   );
 };

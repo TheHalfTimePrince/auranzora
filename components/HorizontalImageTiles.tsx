@@ -5,6 +5,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 import { HorizontalScrollTitle } from './HorizontalScrollTitle';
+import LiquidEther from './LiquidEther';
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
@@ -328,6 +329,7 @@ export const HorizontalImageTiles = () => {
       className="horizontal-gallery-container bg-transparent"
       onClick={handleContainerClick}
     >
+    
       {/* Gallery title at top */}
       {/* <h2 className="gallery-section-title">Gallery</h2> */}
 

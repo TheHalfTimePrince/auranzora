@@ -6,21 +6,14 @@ import { Hero } from '@/components/Hero';
 import { AboutSection } from '@/components/AboutSection';
 
 export default function Home() {
-  return (
-    <main className="bg-white relative z-10 text-white min-h-screen">
+  return (<>
+ 
+
+    <main className=" relative z-10 text-white min-h-screen">
       {/* Fixed Liquid Ether Background */}
       {/* <Hero /> */}
-      <div className="fixed inset-0 z-0">
-        <LiquidEther 
-          colors={['#5227FF', '#FF9FFC', '#B19EEF']}
-          mouseForce={10}
-          cursorSize={100}
-          autoDemo={false}
-          autoSpeed={0.15}
-          autoIntensity={2.2}
-          resolution={0.2}
-        />
-      </div>
+     
+      {/* <div className=" inset-0 absolute bg-white/50  backdrop-blur-xl "></div> */}
       {/* About Section */}
       <AboutSection />
     
@@ -53,6 +46,6 @@ export default function Home() {
           </p>
         </div>
       </div>
-    </main>
+    </main>      </>
   );
 }
