@@ -5,6 +5,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ScrollSmoother } from 'gsap/ScrollSmoother';
 import { Flip } from 'gsap/dist/Flip';
+import Image from 'next/image';
 import LiquidEther from './LiquidEther';
 
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
@@ -114,6 +115,8 @@ const BentoContent = ({ index, wordRefs, cyclingWords: words }: {
   wordRefs: React.MutableRefObject<(HTMLDivElement | null)[]>;
   cyclingWords: string[];
 }) => {
+  // Determine if this image should be prioritized (first 3 visible ones)
+  const isPriority = index <= 2;
   const imageSrc = bentoImages[index];
   const itemRef = useRef<HTMLDivElement>(null);
 
@@ -170,10 +173,13 @@ const BentoContent = ({ index, wordRefs, cyclingWords: words }: {
           className="w-full h-full bg-white flex flex-col items-center justify-center p-6 text-center relative overflow-hidden"
         >
           {imageSrc && (
-            <img 
+            <Image 
               src={imageSrc} 
               alt="Bento" 
-              className={`${colors.imageFilter || ''} bento-image absolute inset-0 w-full h-full object-cover ${opacityMap[colors.imageOpacity]} grayscale`}
+              fill
+              priority={isPriority}
+              className={`${colors.imageFilter || ''} bento-image object-cover ${opacityMap[colors.imageOpacity]} grayscale`}
+              sizes="(max-width: 768px) 50vw, 33vw"
             />
           )}
           {colors.gradient && (
@@ -192,10 +198,13 @@ const BentoContent = ({ index, wordRefs, cyclingWords: words }: {
           className={`w-full h-full bg-${colors.backgroundColor} flex flex-col items-center justify-center p-6 text-center relative overflow-hidden`}
         >
           {imageSrc && (
-            <img 
+            <Image 
               src={imageSrc} 
               alt="Services" 
-              className={`${colors.imageFilter || ''} bento-image absolute inset-0 w-full h-full object-cover opacity-${colors.imageOpacity} grayscale`}
+              fill
+              priority={isPriority}
+              className={`${colors.imageFilter || ''} bento-image object-cover opacity-${colors.imageOpacity} grayscale`}
+              sizes="(max-width: 768px) 50vw, 33vw"
             />
           )}
           {colors.gradient && (
@@ -279,10 +288,13 @@ const BentoContent = ({ index, wordRefs, cyclingWords: words }: {
           className={`w-full h-full bg-${colors.backgroundColor} flex flex-col items-center justify-center p-6 text-center relative overflow-hidden`}
         >
           {imageSrc && (
-            <img 
+            <Image 
               src={imageSrc} 
               alt="Projects" 
-              className={`${colors.imageFilter || ''} bento-image absolute inset-0 w-full h-full object-cover opacity-${colors.imageOpacity} grayscale`}
+              fill
+              priority={isPriority}
+              className={`${colors.imageFilter || ''} bento-image object-cover opacity-${colors.imageOpacity} grayscale`}
+              sizes="(max-width: 768px) 50vw, 33vw"
             />
           )}
           {colors.gradient && (
@@ -301,10 +313,13 @@ const BentoContent = ({ index, wordRefs, cyclingWords: words }: {
           className={`w-full h-full bg-${colors.backgroundColor} flex flex-col items-center justify-center p-6 text-center relative overflow-hidden`}
         >
           {imageSrc && (
-            <img 
+            <Image 
               src={imageSrc} 
               alt="Contact" 
-              className={`${colors.imageFilter || ''} bento-image absolute inset-0 w-full h-full object-cover opacity-${colors.imageOpacity} grayscale`}
+              fill
+              priority={isPriority}
+              className={`${colors.imageFilter || ''} bento-image object-cover opacity-${colors.imageOpacity} grayscale`}
+              sizes="(max-width: 768px) 50vw, 33vw"
             />
           )}
           {colors.gradient && (
@@ -329,10 +344,13 @@ const BentoContent = ({ index, wordRefs, cyclingWords: words }: {
           className={`w-full h-full bg-${colors.backgroundColor} flex flex-col items-center justify-center p-6 text-center relative overflow-hidden`}
         >
           {imageSrc && (
-            <img 
+            <Image 
               src={imageSrc} 
               alt="Clients" 
-              className={`${colors.imageFilter || ''} bento-image absolute inset-0 w-full h-full object-cover opacity-${colors.imageOpacity} grayscale`}
+              fill
+              priority={isPriority}
+              className={`${colors.imageFilter || ''} bento-image object-cover opacity-${colors.imageOpacity} grayscale`}
+              sizes="(max-width: 768px) 50vw, 33vw"
             />
           )}
           {colors.gradient && (
@@ -351,10 +369,13 @@ const BentoContent = ({ index, wordRefs, cyclingWords: words }: {
           className={`w-full h-full bg-${colors.backgroundColor} flex flex-col items-center justify-center p-6 text-center relative overflow-hidden`}
         >
           {imageSrc && (
-            <img 
+            <Image 
               src={imageSrc} 
               alt="Philosophy" 
-              className={`${colors.imageFilter || ''} bento-image absolute inset-0 w-full h-full object-cover opacity-${colors.imageOpacity} grayscale`}
+              fill
+              priority={isPriority}
+              className={`${colors.imageFilter || ''} bento-image object-cover opacity-${colors.imageOpacity} grayscale`}
+              sizes="(max-width: 768px) 50vw, 33vw"
             />
           )}
           {colors.gradient && (
