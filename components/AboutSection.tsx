@@ -15,6 +15,7 @@ gsap.registerPlugin(ScrambleTextPlugin, ScrollTrigger);
 const GradientWeightText = ({ word, className }: { word: string; className: string }) => {
   const letters = word.split('');
   const length = letters.length;
+  const gradientConfig = aboutSectionAnimation.gradientText;
   
   // Calculate scale, shadow, color, and spacing for each letter
   const getLetterStyle = (index: number) => {
@@ -24,22 +25,22 @@ const GradientWeightText = ({ word, className }: { word: string; className: stri
     // Position 0.5 (middle) = 1.0, edges = 0.0
     const curve = 1 - Math.pow((position - 0.5) * 2, 4);
     
-    // Scale X-axis: edges thinner (0.6), middle wider (1.3) for dramatic effect
-    const scaleX = 0.6 + curve * 0.7;
+    // Scale X-axis: edges thinner, middle wider for dramatic effect
+    const scaleX = gradientConfig.scale.min + curve * gradientConfig.scale.range;
     
     // Letter spacing: more spacing in the middle for extra flare
-    const letterSpacing = curve * 0.15; // 0 to 0.15em
+    const letterSpacing = curve * gradientConfig.letterSpacing.max;
     
     // Gradient colors: purple -> blue -> pink based on position
-    const hue = 280 + (position * 60); // Purple (280) to Pink (340)
-    const saturation = 60 + curve * 30; // 60% to 90%
-    const lightness = 50 - curve * 10; // 50% to 40% (darker in middle)
+    const hue = gradientConfig.color.hueStart + (position * gradientConfig.color.hueRange);
+    const saturation = gradientConfig.color.saturationMin + curve * gradientConfig.color.saturationRange;
+    const lightness = gradientConfig.color.lightnessBase - curve * gradientConfig.color.lightnessRange;
     const color = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
     
     // Create multiple text-shadows for boldness and glow effect
-    const shadowCount = Math.max(1, Math.round(curve * 12)); // 1-12 shadows
+    const shadowCount = Math.max(1, Math.round(curve * gradientConfig.shadow.countMultiplier));
     const shadows: string[] = [];
-    const shadowSpread = curve * 0.6; // How far shadows spread
+    const shadowSpread = curve * gradientConfig.shadow.spreadMultiplier;
     
     // Boldness shadows
     for (let i = 0; i < shadowCount; i++) {
@@ -50,10 +51,11 @@ const GradientWeightText = ({ word, className }: { word: string; className: stri
     }
     
     // Glow effect shadows (more intense in middle)
-    const glowIntensity = curve * 1.5;
-    shadows.push(`0 0 ${glowIntensity * 8}px ${color}80`); // Soft glow
-    shadows.push(`0 0 ${glowIntensity * 4}px ${color}60`); // Medium glow
-    shadows.push(`0 0 ${glowIntensity * 2}px ${color}`); // Sharp glow
+    const glowIntensity = curve * gradientConfig.shadow.glowIntensityMultiplier;
+    gradientConfig.shadow.glowSizes.forEach((size, idx) => {
+      const opacity = gradientConfig.shadow.glowOpacities[idx];
+      shadows.push(`0 0 ${glowIntensity * size}px ${color}${opacity}`);
+    });
     
     return {
       display: 'inline-block',
@@ -62,7 +64,7 @@ const GradientWeightText = ({ word, className }: { word: string; className: stri
       transformOrigin: 'center',
       color: color,
       letterSpacing: `${letterSpacing}em`,
-      filter: `brightness(${1 + curve * 0.2})`, // Slight brightness boost in middle
+      filter: `brightness(${1 + curve * gradientConfig.brightness.boost})`, // Slight brightness boost in middle
     };
   };
 
@@ -138,11 +140,23 @@ export const AboutSection = () => {
     const masterTL = gsap.timeline({ paused: aboutSectionAnimation.timeline.paused });
     
     // Calculate total timeline duration based on all animation timings
-    // Logo icon: starts at 0, duration 1 = ends at 1.0
-    // Logo overlay: scale (0.4s) + move (0.5s) starting at 1.0 = ends at ~1.9
-    // Text fade: starts at ~1.9, duration 0.8 = ends at ~2.7
-    // Adjusted to start immediately for scroll-based scrubbing while maintaining relative timing
-    const totalDuration = aboutSectionAnimation.timeline.totalDuration;
+    // This is calculated dynamically from individual animation durations
+    const logoIconDuration = logoIconAnimation.morph.duration;
+    const overlayStartTime = logoIconDuration;
+    const scaleDuration = aboutSectionAnimation.logoOverlay.scale.duration;
+    const moveDuration = aboutSectionAnimation.logoOverlay.move.duration;
+    const moveStartTime = overlayStartTime + scaleDuration * aboutSectionAnimation.logoOverlay.move.startOffset;
+    const textFadeStartTime = overlayStartTime + scaleDuration + moveDuration + aboutSectionAnimation.textLogo.opacity.delay;
+    const textFadeDuration = aboutSectionAnimation.textLogo.opacity.duration;
+    
+    // Calculate end times for each animation
+    const logoIconEndTime = logoIconDuration;
+    const scaleEndTime = overlayStartTime + scaleDuration;
+    const moveEndTime = moveStartTime + moveDuration;
+    const textFadeEndTime = textFadeStartTime + textFadeDuration;
+    
+    // Total duration is the maximum end time of all animations
+    const totalDuration = Math.max(logoIconEndTime, scaleEndTime, moveEndTime, textFadeEndTime);
     
     // Calculate scroll distance based on timeline duration
     // Use viewport height as base unit for smooth scrubbing (similar to horizontal scroller using width)
@@ -162,11 +176,8 @@ export const AboutSection = () => {
       
       // Add logo overlay animation to timeline
       // Scale first with bounce, then move with bounce - sequential for better effect
-      const logoIconDuration = logoIconAnimation.morph.duration;
-      const overlayStartTime = logoIconDuration; // Start right after logo icon completes
       
       // First: Scale animation with bounce (faster and more dynamic)
-      const scaleDuration = aboutSectionAnimation.logoOverlay.scale.duration;
       masterTL.to(fixedLogo, {
         scale: aboutSectionAnimation.logoOverlay.targetScale,
         duration: scaleDuration,
@@ -174,21 +185,18 @@ export const AboutSection = () => {
       }, overlayStartTime);
       
       // Then: Position animation (smooth, no bounce)
-      const moveDuration = aboutSectionAnimation.logoOverlay.move.duration;
       masterTL.to(fixedLogo, {
         x: deltaX,
         y: deltaY,
         duration: moveDuration,
         ease: aboutSectionAnimation.logoOverlay.move.ease,
-      }, overlayStartTime + scaleDuration * aboutSectionAnimation.logoOverlay.move.startOffset);
+      }, moveStartTime);
 
       // Add text logo and paragraph fade-in to timeline
-      // Start after scale and move animations complete
-      const textFadeStartTime = overlayStartTime + scaleDuration + moveDuration;
-      
+      // Start after scale and move animations complete, adjusted by delay
       masterTL.to([textLogo, paragraph], {
         opacity: 1,
-        duration: aboutSectionAnimation.textLogo.opacity.duration,
+        duration: textFadeDuration,
         ease: aboutSectionAnimation.textLogo.opacity.ease,
       }, textFadeStartTime);
     });
