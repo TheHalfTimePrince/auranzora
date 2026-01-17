@@ -305,6 +305,10 @@ export const AboutSection = () => {
         <div 
           ref={fixedLogoRef}
           className="absolute top-1/2 left-1/2  z-20 flex items-center gap-1 md:gap-2 pointer-events-none"
+          style={{ 
+            transform: `translate(-50%, -50%) scale(${aboutSectionAnimation.fixedLogo.initialScale})`,
+            transformOrigin: aboutSectionAnimation.fixedLogo.transformOrigin,
+          }}
         >
           <LogoIconAnimated trigger={masterTimeline} className={isMobile ? "h-5 w-5 inline-block" : "h-10 w-10 md:h-14 md:w-14 inline-block"} />
           <LogoTextAnimated className={isMobile ? "h-5 text-black inline-block" : "h-10 md:h-14 text-black inline-block"} />
