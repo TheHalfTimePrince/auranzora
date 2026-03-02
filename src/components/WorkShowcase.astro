@@ -1,0 +1,72 @@
+---
+import { getPublishedCaseStudies } from '../data/case-studies';
+
+const workItems = getPublishedCaseStudies();
+---
+
+<section id="work" class="py-16 md:py-24 px-6 md:px-10 border-t border-charcoal/10">
+  <div class="container mx-auto max-w-7xl">
+    <div class="mb-12 md:mb-16 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+      <div>
+        <span class="text-xs uppercase tracking-[0.2em] text-terracotta font-medium block mb-3">
+          Selected Work
+        </span>
+        <h2
+          class="text-4xl md:text-6xl font-bold leading-tight tracking-[-0.02em] text-charcoal"
+          style="font-family: var(--font-heading)"
+        >
+          Our Work
+        </h2>
+      </div>
+      <p class="text-charcoal/50 text-sm md:text-base max-w-md">
+        Explore how we've helped businesses transform their digital presence and achieve measurable results.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-1 auto-rows-[200px] md:auto-rows-[280px] grid-flow-dense">
+      {workItems.map((item) => (
+        <a
+          href={`/work/${item.slug}/`}
+          class:list={[
+            'group relative overflow-hidden cursor-pointer block',
+            item.gridSpan === 'tall' && 'row-span-2',
+            item.gridSpan === 'wide' && 'col-span-2',
+          ]}
+          style="clip-path: polygon(0 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%)"
+        >
+          <img
+            src={item.heroImage}
+            alt={item.clientName}
+            loading="lazy"
+            decoding="async"
+            class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 grayscale group-hover:grayscale-0"
+          />
+
+          <div class="absolute inset-0 bg-charcoal/40 group-hover:bg-terracotta/50 transition-colors duration-300"></div>
+
+          <div class="absolute inset-0 flex flex-col justify-between p-4 md:p-6">
+            <span class="self-start text-[10px] md:text-xs uppercase tracking-[0.2em] text-sand/80 border border-sand/30 px-3 py-1">
+              {item.category}
+            </span>
+
+            <div>
+              <h3
+                class="text-2xl md:text-4xl lg:text-5xl font-black text-sand tracking-tight"
+                style="font-family: var(--font-heading)"
+              >
+                {item.clientName}
+              </h3>
+
+              <div class="flex items-center gap-2 mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <span class="text-sand/80 text-sm uppercase tracking-[0.1em]">View Project</span>
+                <svg class="w-4 h-4 text-sand/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </div>
+            </div>
+          </div>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>

@@ -1,0 +1,81 @@
+@import "tailwindcss";
+
+:root {
+  --sand: #F2E8DF;
+  --terracotta: #B36A5E;
+  --sage: #828E82;
+  --charcoal: #2D2D2D;
+  --ochre: #D4A373;
+  --parchment: #EDE0D4;
+  --clay-light: #C9968B;
+  --sand-dark: #D9CBBF;
+
+  --background: var(--sand);
+  --foreground: var(--charcoal);
+
+  --font-heading: 'Jost', sans-serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-body);
+
+  --color-sand: #F2E8DF;
+  --color-terracotta: #B36A5E;
+  --color-sage: #828E82;
+  --color-charcoal: #2D2D2D;
+  --color-ochre: #D4A373;
+  --color-parchment: #EDE0D4;
+  --color-clay-light: #C9968B;
+  --color-sand-dark: #D9CBBF;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--sand);
+  color: var(--charcoal);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Bauhaus: no border-radius anywhere */
+* {
+  border-radius: 0 !important;
+}
+
+p {
+  font-size: 1rem;
+  margin-bottom: 0;
+}
+
+.btn-bauhaus {
+  transition: none;
+}
+.btn-bauhaus:hover {
+  background-color: var(--charcoal);
+  color: var(--sand);
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.marquee-track {
+  animation: marquee 30s linear infinite;
+}
+.marquee-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}

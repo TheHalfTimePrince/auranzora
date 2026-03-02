@@ -1,0 +1,62 @@
+---
+import LogoIcon from './LogoIcon.astro';
+import LogoText from './LogoText.astro';
+
+const navLinks = [
+  { href: '/#work', label: 'Work' },
+  { href: '/#process', label: 'Process' },
+  { href: '/#reviews', label: 'Reviews' },
+  { href: '/#contact', label: 'Contact' },
+];
+---
+
+<header class="fixed top-0 left-0 right-0 z-50 bg-sand/90 backdrop-blur-sm border-b border-charcoal/10">
+  <div class="px-6 md:px-10 py-4 md:py-5 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-2 group">
+      <LogoIcon class="h-7 w-7 md:h-8 md:w-8 transition-opacity group-hover:opacity-60" />
+      <LogoText class="h-5 md:h-6 transition-opacity group-hover:opacity-60" />
+    </a>
+
+    <nav class="hidden md:flex items-center gap-10">
+      {navLinks.map((link) => (
+        <a
+          href={link.href}
+          class="text-sm uppercase tracking-[0.15em] font-medium text-charcoal/70 hover:text-terracotta transition-colors"
+        >
+          {link.label}
+        </a>
+      ))}
+    </nav>
+
+    <label for="menu-toggle" class="md:hidden text-charcoal p-1 cursor-pointer" aria-label="Toggle menu">
+      <svg class="w-5 h-5 menu-icon-open" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+      <svg class="w-5 h-5 menu-icon-close hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </label>
+  </div>
+
+  <input type="checkbox" id="menu-toggle" class="peer hidden" />
+
+  <nav class="md:hidden border-t border-charcoal/10 px-6 py-4 flex-col gap-4 bg-sand/95 backdrop-blur-sm hidden peer-checked:flex">
+    {navLinks.map((link) => (
+      <a
+        href={link.href}
+        class="text-sm uppercase tracking-[0.15em] font-medium text-charcoal/70 hover:text-terracotta transition-colors py-1 block"
+      >
+        {link.label}
+      </a>
+    ))}
+  </nav>
+</header>
+
+<style>
+  #menu-toggle:checked ~ .px-6 .menu-icon-open {
+    display: none;
+  }
+  #menu-toggle:checked ~ .px-6 .menu-icon-close {
+    display: block;
+  }
+</style>

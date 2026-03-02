@@ -1,0 +1,185 @@
+---
+import Base from '../../layouts/Base.astro';
+import CaseStudyGallery from '../../components/CaseStudyGallery.astro';
+import {
+  getPublishedCaseStudies,
+  getCaseStudyBySlug,
+  type CaseStudy,
+} from '../../data/case-studies';
+
+export function getStaticPaths() {
+  return getPublishedCaseStudies().map((cs) => ({
+    params: { slug: cs.slug },
+  }));
+}
+
+const { slug } = Astro.params;
+const study = getCaseStudyBySlug(slug!) as CaseStudy;
+
+const allPublished = getPublishedCaseStudies();
+const currentIdx = allPublished.findIndex((s) => s.slug === slug);
+const next = allPublished[(currentIdx + 1) % allPublished.length];
+
+const pageTitle = `${study.clientName} — ${study.title} | Subliminal`;
+---
+
+<Base title={pageTitle} description={study.tagline}>
+  <main class="relative z-10 min-h-screen bg-sand text-charcoal">
+
+    <!-- Hero -->
+    <section class="relative h-[70vh] md:h-[85vh] overflow-hidden">
+      <img
+        src={study.heroImage}
+        alt={study.title}
+        class="absolute inset-0 w-full h-full object-cover grayscale"
+      />
+      <div class="absolute inset-0 bg-charcoal/50"></div>
+
+      <div class="absolute inset-0 flex flex-col justify-end p-6 md:p-16 lg:p-24">
+        <div class="container mx-auto max-w-6xl">
+          <span class="text-[10px] md:text-xs uppercase tracking-[0.25em] text-sand/70 border border-sand/30 px-3 py-1 inline-block mb-6">
+            {study.category}
+          </span>
+          <h1
+            class="text-5xl md:text-7xl lg:text-8xl font-black text-sand tracking-tight leading-[0.95]"
+            style="font-family: var(--font-heading)"
+          >
+            {study.clientName}
+          </h1>
+          <p class="text-lg md:text-xl text-sand/70 mt-4 max-w-2xl">
+            {study.tagline}
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Meta bar -->
+    <section class="border-b border-charcoal/10">
+      <div class="container mx-auto max-w-6xl px-6 md:px-10 py-10 grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div>
+          <span class="text-[10px] uppercase tracking-[0.2em] text-charcoal/40 block mb-1">Client</span>
+          <span class="font-semibold">{study.clientName}</span>
+        </div>
+        <div>
+          <span class="text-[10px] uppercase tracking-[0.2em] text-charcoal/40 block mb-1">Year</span>
+          <span class="font-semibold">{study.year}</span>
+        </div>
+        <div class="col-span-2">
+          <span class="text-[10px] uppercase tracking-[0.2em] text-charcoal/40 block mb-1">Services</span>
+          <span class="font-semibold">{study.services.join(' / ')}</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Results strip -->
+    <section class="bg-charcoal text-sand">
+      <div class="container mx-auto max-w-6xl px-6 md:px-10 py-14 grid grid-cols-2 md:grid-cols-3 gap-8">
+        {study.results.map((r) => (
+          <div>
+            <span
+              class="text-4xl md:text-5xl font-black tracking-tight block"
+              style="font-family: var(--font-heading)"
+            >
+              {r.value}
+            </span>
+            <span class="text-sm text-sand/60 uppercase tracking-[0.15em] mt-1 block">
+              {r.label}
+            </span>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Content sections -->
+    {study.sections.map((section, idx) => (
+      <section class="border-b border-charcoal/10 last:border-b-0">
+        <div class="container mx-auto max-w-6xl px-6 md:px-10 py-16 md:py-24">
+          <div class:list={[
+            'flex flex-col gap-12 md:gap-16 items-start',
+            idx % 2 === 1 ? 'md:flex-row-reverse' : 'md:flex-row',
+          ]}>
+            <div class:list={['flex-1', section.image && 'md:max-w-[50%]']}>
+              <h2
+                class="text-3xl md:text-4xl font-bold tracking-tight mb-6"
+                style="font-family: var(--font-heading)"
+              >
+                {section.heading}
+              </h2>
+              <p class="text-charcoal/70 leading-relaxed text-base md:text-lg">
+                {section.body}
+              </p>
+            </div>
+
+            {section.image && (
+              <div class="flex-1 relative w-full aspect-4/3 overflow-hidden">
+                <img
+                  src={section.image}
+                  alt={section.heading}
+                  loading="lazy"
+                  decoding="async"
+                  class="absolute inset-0 w-full h-full object-cover object-top"
+                />
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+    ))}
+
+    <!-- Gallery -->
+    {study.gallery.length > 0 && (
+      <section class="bg-parchment">
+        <div class="container mx-auto max-w-6xl px-6 md:px-10 py-16 md:py-24">
+          <h2
+            class="text-3xl md:text-4xl font-bold tracking-tight mb-10"
+            style="font-family: var(--font-heading)"
+          >
+            Gallery
+          </h2>
+          <CaseStudyGallery items={study.gallery} />
+        </div>
+      </section>
+    )}
+
+    <!-- Live URL -->
+    {study.liveUrl && (
+      <section class="border-t border-charcoal/10">
+        <div class="container mx-auto max-w-6xl px-6 md:px-10 py-10 text-center">
+          <a
+            href={study.liveUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn-bauhaus inline-block px-10 py-5 bg-charcoal text-sand font-semibold text-sm uppercase tracking-[0.1em]"
+          >
+            Visit Live Site
+          </a>
+        </div>
+      </section>
+    )}
+
+    <!-- Next project CTA -->
+    <a href={`/work/${next.slug}/`} class="block group">
+      <section class="relative h-[40vh] md:h-[50vh] overflow-hidden">
+        <img
+          src={next.heroImage}
+          alt={next.clientName}
+          loading="lazy"
+          decoding="async"
+          class="absolute inset-0 w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105"
+        />
+        <div class="absolute inset-0 bg-charcoal/60 group-hover:bg-terracotta/50 transition-colors duration-300"></div>
+        <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+          <span class="text-[10px] md:text-xs uppercase tracking-[0.25em] text-sand/60 mb-3">
+            Next Project
+          </span>
+          <span
+            class="text-4xl md:text-6xl font-black text-sand tracking-tight"
+            style="font-family: var(--font-heading)"
+          >
+            {next.clientName}
+          </span>
+        </div>
+      </section>
+    </a>
+  </main>
+</Base>

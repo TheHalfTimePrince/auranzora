@@ -1,0 +1,92 @@
+---
+interface Review {
+  name: string;
+  role: string;
+  company: string;
+  content: string;
+  avatar: string;
+}
+
+const reviews: Review[] = [
+  {
+    name: "Sarah Chen",
+    role: "CEO",
+    company: "TechVentures",
+    content: "Working with Subliminal transformed our entire online presence. Their attention to detail and understanding of SEO fundamentals helped us climb from page 5 to the top 3 results in just 4 months.",
+    avatar: "/bento/alexandru-ant-qyAWIbWfvtA-unsplash.jpg",
+  },
+  {
+    name: "Michael Torres",
+    role: "Marketing Director",
+    company: "GrowthLabs",
+    content: "The brand identity they created for us is absolutely stunning. It perfectly captures our company's vision and has received countless compliments from clients and partners alike.",
+    avatar: "/bento/fachrizal-maulana-y_uVUwodD44-unsplash.jpg",
+  },
+  {
+    name: "Emma Williams",
+    role: "Founder",
+    company: "Artisan Collective",
+    content: "Professional, creative, and incredibly responsive. They delivered a website that not only looks beautiful but actually drives conversions. Our sales have increased by 200% since launch.",
+    avatar: "/bento/olegs-jonins-w13BMngq7JM-unsplash.jpg",
+  },
+  {
+    name: "David Kim",
+    role: "COO",
+    company: "InnovateTech",
+    content: "The team goes above and beyond. They didn't just build us a website — they created a complete digital ecosystem that continues to bring in qualified leads every day.",
+    avatar: "/bento/qihang-fan-zbHanmcQfiw-unsplash.jpg",
+  },
+];
+---
+
+<section id="reviews" class="py-20 md:py-28 px-6 md:px-10 bg-parchment border-t border-charcoal/10">
+  <div class="container mx-auto max-w-6xl">
+    <div class="mb-14 md:mb-20">
+      <span class="text-xs uppercase tracking-[0.2em] text-sage font-medium block mb-3">
+        Testimonials
+      </span>
+      <h2
+        class="text-4xl md:text-5xl font-bold text-charcoal leading-tight tracking-[-0.02em]"
+        style="font-family: var(--font-heading)"
+      >
+        What Our Clients Say
+      </h2>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-px bg-charcoal/10">
+      {reviews.map((review) => (
+        <article
+          class="bg-parchment p-8 md:p-10 group hover:bg-sand"
+          style="transition: background-color 0.1s"
+        >
+          <blockquote class="text-charcoal/70 leading-relaxed text-base md:text-lg mb-8">
+            &ldquo;{review.content}&rdquo;
+          </blockquote>
+
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 overflow-hidden grayscale group-hover:grayscale-0 transition-all">
+              <img
+                src={review.avatar}
+                alt={review.name}
+                loading="lazy"
+                decoding="async"
+                class="w-full h-full object-cover"
+              />
+            </div>
+            <div>
+              <h4
+                class="font-bold text-charcoal text-base"
+                style="font-family: var(--font-heading)"
+              >
+                {review.name}
+              </h4>
+              <p class="text-sm text-charcoal/50">
+                {review.role}, {review.company}
+              </p>
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>

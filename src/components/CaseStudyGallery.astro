@@ -1,0 +1,115 @@
+---
+import type { CaseStudyGalleryItem } from '../data/case-studies';
+
+interface Props {
+  items: CaseStudyGalleryItem[];
+}
+
+const { items } = Astro.props;
+---
+
+<div class="gallery-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+  {items.map((item, idx) => (
+    <button
+      type="button"
+      class="gallery-thumb relative aspect-4/3 overflow-hidden group cursor-pointer w-full"
+      data-index={idx}
+    >
+      <img
+        src={item.src}
+        alt={item.alt}
+        loading="lazy"
+        decoding="async"
+        class="absolute inset-0 w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+      />
+      <div class="absolute inset-0 bg-charcoal/0 group-hover:bg-charcoal/20 transition-colors duration-300"></div>
+      {item.caption && (
+        <span class="absolute bottom-3 left-3 text-xs text-sand/80 bg-charcoal/60 px-2 py-1">
+          {item.caption}
+        </span>
+      )}
+    </button>
+  ))}
+</div>
+
+<dialog class="gallery-lightbox fixed inset-0 z-50 bg-charcoal/90 w-full h-full max-w-full max-h-full m-0 p-4 md:p-10 border-none">
+  <div class="relative w-full h-full flex items-center justify-center">
+    <button type="button" class="gallery-close absolute top-2 right-2 text-sand/80 hover:text-sand text-3xl leading-none cursor-pointer z-10" aria-label="Close">
+      &times;
+    </button>
+
+    <button type="button" class="gallery-prev absolute left-0 md:left-4 top-1/2 -translate-y-1/2 text-sand/60 hover:text-sand text-4xl cursor-pointer z-10" aria-label="Previous">
+      &#8249;
+    </button>
+    <button type="button" class="gallery-next absolute right-0 md:right-4 top-1/2 -translate-y-1/2 text-sand/60 hover:text-sand text-4xl cursor-pointer z-10" aria-label="Next">
+      &#8250;
+    </button>
+
+    <div class="relative w-full max-w-5xl max-h-[85vh] aspect-16/10">
+      <img class="gallery-lightbox-img w-full h-full object-contain" src="" alt="" />
+    </div>
+  </div>
+</dialog>
+
+<script>
+  import gsap from 'gsap';
+
+  document.querySelectorAll('.gallery-grid').forEach((grid) => {
+    const dialog = grid.nextElementSibling as HTMLDialogElement;
+    if (!dialog) return;
+
+    const img = dialog.querySelector('.gallery-lightbox-img') as HTMLImageElement;
+    const thumbs = grid.querySelectorAll('.gallery-thumb');
+    const items: { src: string; alt: string }[] = [];
+    let currentIdx = 0;
+
+    thumbs.forEach((thumb) => {
+      const thumbImg = thumb.querySelector('img') as HTMLImageElement;
+      items.push({ src: thumbImg.src, alt: thumbImg.alt });
+    });
+
+    function show(idx: number) {
+      currentIdx = ((idx % items.length) + items.length) % items.length;
+      img.src = items[currentIdx].src;
+      img.alt = items[currentIdx].alt;
+      dialog.showModal();
+      gsap.fromTo(dialog, { opacity: 0 }, { opacity: 1, duration: 0.25, ease: 'power2.out' });
+    }
+
+    thumbs.forEach((thumb, i) => {
+      thumb.addEventListener('click', () => show(i));
+    });
+
+    dialog.querySelector('.gallery-close')?.addEventListener('click', () => {
+      gsap.to(dialog, {
+        opacity: 0,
+        duration: 0.2,
+        ease: 'power2.in',
+        onComplete: () => dialog.close(),
+      });
+    });
+
+    dialog.querySelector('.gallery-prev')?.addEventListener('click', () => show(currentIdx - 1));
+    dialog.querySelector('.gallery-next')?.addEventListener('click', () => show(currentIdx + 1));
+
+    dialog.addEventListener('click', (e) => {
+      if (e.target === dialog) {
+        gsap.to(dialog, {
+          opacity: 0,
+          duration: 0.2,
+          ease: 'power2.in',
+          onComplete: () => dialog.close(),
+        });
+      }
+    });
+  });
+</script>
+
+<style>
+  dialog::backdrop {
+    background: transparent;
+  }
+  dialog[open] {
+    display: flex;
+  }
+</style>

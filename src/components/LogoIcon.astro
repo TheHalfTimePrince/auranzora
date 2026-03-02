@@ -1,0 +1,20 @@
+---
+interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+
+const ringPath = 'M 44.3,0.15 A 44.3,44.3 0 1,1 44.3,88.75 A 44.3,44.3 0 1,1 44.3,0.15 Z M 44.3,6.45 A 38,38 0 1,0 44.3,82.45 A 38,38 0 1,0 44.3,6.45 Z';
+---
+
+<span class:list={['inline-block overflow-visible', className]}>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 88.6 88.9"
+    class="max-w-[1200px] overflow-visible"
+    style="overflow: visible"
+  >
+    <path fill="#2D2D2D" d={ringPath} />
+  </svg>
+</span>
